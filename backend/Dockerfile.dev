@@ -1,0 +1,10 @@
+FROM golang:1.21
+
+# Set destination for COPY
+WORKDIR /app
+
+# live reload
+RUN go install github.com/cosmtrek/air@latest
+
+# Run
+CMD ["air"]
