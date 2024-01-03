@@ -1,8 +1,10 @@
 module github.com/pegov/rolecap/backend
 
-go 1.21.1
+go 1.21
+
 
 require (
+	github.com/pegov/rolecap/backend/core v0.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/jackc/pgx/v5 v5.4.3
@@ -11,6 +13,8 @@ require (
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.14.0
 )
+
+replace github.com/pegov/rolecap/backend/core => ./core
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect
