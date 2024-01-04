@@ -22,7 +22,7 @@ var (
 func (data *UserRegisterRequest) Vaidate() error {
 	// TODO: validate
 	data.Email = strings.TrimSpace(data.Email)
-	data.Username = strings.TrimSpace(data.Email)
+	data.Username = strings.TrimSpace(data.Username)
 	if data.Password1 != data.Password2 {
 		return ErrUserRegisterPasswordMismatch
 	}
