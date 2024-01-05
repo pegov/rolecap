@@ -1,3 +1,0 @@
-[submodule "backend/core"]
-	path = backend/core
-	url = git@github.com:pegov/rolecap-backend-go-core.git
