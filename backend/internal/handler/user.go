@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log/slog"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 type AuthHandler interface {
 	Register(c *gin.Context)
 	Login(c *gin.Context)
+	Logout(c *gin.Context)
 	Token(c *gin.Context)
 	RefreshToken(c *gin.Context)
 }
@@ -21,14 +23,16 @@ type authHandler struct {
 	Repo           repo.AuthRepo
 	JwtBackend     util.JwtBackend
 	PasswordHasher util.PasswordHasher
+	Logger         *slog.Logger
 }
 
 func NewAuthHandler(
 	authRepo repo.AuthRepo,
 	jwtBackend util.JwtBackend,
 	passwordHasher util.PasswordHasher,
+	logger *slog.Logger,
 ) AuthHandler {
-	return &authHandler{authRepo, jwtBackend, passwordHasher}
+	return &authHandler{authRepo, jwtBackend, passwordHasher, logger}
 }
 
 func (s *authHandler) Register(c *gin.Context) {
@@ -38,7 +42,7 @@ func (s *authHandler) Register(c *gin.Context) {
 		return
 	}
 
-	if err := data.Vaidate(); err != nil {
+	if err := data.Validate(); err != nil {
 		c.JSON(400, gin.H{"detail": err.Error()})
 		return
 	}
@@ -148,6 +152,11 @@ func (s *authHandler) Login(c *gin.Context) {
 
 	c.SetCookie(extractor.AccessTokenCookieName, accessToken, 6*60*60, "/", "127.0.0.1", false, true)
 	c.SetCookie(extractor.RefreshTokenCookieName, refreshToken, 31*24*60*60, "/", "127.0.0.1", false, true)
+}
+
+func (s *authHandler) Logout(c *gin.Context) {
+	c.SetCookie(extractor.AccessTokenCookieName, "", -1, "/", "127.0.0.1", false, true)
+	c.SetCookie(extractor.RefreshTokenCookieName, "", -1, "/", "127.0.0.1", false, true)
 }
 
 func (s *authHandler) Token(c *gin.Context) {

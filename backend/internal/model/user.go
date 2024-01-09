@@ -19,7 +19,7 @@ var (
 	ErrUserRegisterPasswordMismatch = errors.New("password mismatch")
 )
 
-func (data *UserRegisterRequest) Vaidate() error {
+func (data *UserRegisterRequest) Validate() error {
 	// TODO: validate
 	data.Email = strings.TrimSpace(data.Email)
 	data.Username = strings.TrimSpace(data.Username)

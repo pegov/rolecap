@@ -2,9 +2,7 @@ module github.com/pegov/rolecap/backend
 
 go 1.21
 
-
 require (
-	github.com/pegov/rolecap/backend/core v0.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/jackc/pgx/v5 v5.4.3
@@ -12,9 +10,8 @@ require (
 	github.com/redis/go-redis/v9 v9.2.1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.14.0
+	github.com/pegov/rolecap/backend/pkg/private v0.0.0
 )
-
-replace github.com/pegov/rolecap/backend/core => ./core
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect
@@ -50,3 +47,5 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/pegov/rolecap/backend/pkg/private v0.0.0 => ./pkg/private

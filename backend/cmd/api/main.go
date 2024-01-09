@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
+	"github.com/pegov/rolecap/backend/internal/extractor"
 	"github.com/pegov/rolecap/backend/internal/handler"
 	"github.com/pegov/rolecap/backend/internal/repo"
 	"github.com/pegov/rolecap/backend/internal/router"
@@ -42,6 +44,7 @@ func main() {
 	defer redisCache.Close()
 
 	authRepo := repo.NewAuthRepo(postgresDb, redisCache)
+	genRepo := repo.NewGenRepo(postgresDb, redisCache)
 
 	privateKeyBytes, err := os.ReadFile("./ed25519_1.key")
 	if err != nil {
@@ -52,13 +55,21 @@ func main() {
 		log.Fatalln(err)
 	}
 	jwtBackend := util.NewJwtBackend(privateKeyBytes, publicKeyBytes, "1")
+	authExtractor := extractor.NewAuthExtractor(authRepo, jwtBackend)
 
 	passwordHasher := util.NewBcryptPasswordHasher()
 
-	authHandler := handler.NewAuthHandler(authRepo, jwtBackend, passwordHasher)
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+	}))
+
+	authHandler := handler.NewAuthHandler(authRepo, jwtBackend, passwordHasher, logger)
+	genEditorHandler := handler.NewGenEditorHandler(genRepo, authExtractor, logger)
+	genViewerHandler := handler.NewGenViewerHandler(genRepo, authExtractor, logger)
 
 	r := gin.Default()
 	router.SetupUserRouter(r, authHandler)
+	router.SetupGenHandler(r, genEditorHandler, genViewerHandler)
 
 	host, ok := os.LookupEnv("HOST")
 	if !ok {

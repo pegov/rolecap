@@ -3,6 +3,7 @@ package router
 import (
 	"bytes"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -44,7 +45,7 @@ func TestMain(m *testing.M) {
 	}
 	jwtBackend := util.NewJwtBackend(privateKeyBytes, publicKeyBytes, "1")
 	passwordHasher := util.NewPlainTextPasswordHasher()
-	h := handler.NewAuthHandler(repo, jwtBackend, passwordHasher)
+	h := handler.NewAuthHandler(repo, jwtBackend, passwordHasher, slog.Default())
 	SetupUserRouter(r, h)
 
 	code := m.Run()
